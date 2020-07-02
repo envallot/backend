@@ -1,4 +1,5 @@
 import express, { Request, Response, NextFunction, Application } from 'express'
+import { ErrorWithStatus } from './types'
 import cors from 'cors'
 import helmet from 'helmet'
 

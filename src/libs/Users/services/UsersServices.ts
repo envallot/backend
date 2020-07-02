@@ -5,5 +5,14 @@ export class UsersServices {
     this.model = usersModel
   }
 
-  // createUser()
+  async create(){
+    try {
+      const newUser = await this.model.add()
+      console.log('user created: newUser')
+      return newUser
+
+    } catch(error){
+      throw new Error(error)
+    }
+  }
 }

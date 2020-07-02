@@ -1,3 +1,5 @@
+import { Query } from '../../../types'
+
 export class UsersModel {
   db: any
   query: any
@@ -11,45 +13,44 @@ export class UsersModel {
    * 
    * @returns A promise resolves to a primary key id
    */
-  create():Promise<any> {
-    const text = `
-      CREATE TABLE IF NOT EXISTS
-        users(
-          id SERIAL PRIMARY KEY,
-          username VARCHAR(128),
-          email VARCHAR(128),
-          password VARCHAR(128),
-          created_date TIMESTAMP,timestamp default current_timestamp
-
-          modified_date TIMESTAMP
-        )
-      `;
-    return this.query(text)
-  }
+  // create(): Promise<any> {
+  //   const query: Query = `
+  //     CREATE TABLE IF NOT EXISTS
+  //       users(
+  //         id SERIAL PRIMARY KEY,
+  //         username VARCHAR(128),
+  //         email VARCHAR(128),
+  //         password VARCHAR(128),
+  //       )
+  //     `;
+  //   return this.query(query)
+  // }
 
   /**
-   * Adds a new user row
-   * 
-   * @param name - The name a user wants to be referred by, nullable and not unique
-   * @param password - The password for authentication, nullable
-   * @param email - The user's email, unique but nullable
+   * Adds a new user row. Specifically, all we do is return a unique id.
+   * This is for 'registering' users without askign for any info. Later on,
+   * after the user gets to know our app, we will ask for an email.
    * 
    * @returns A promise that resolves to an object of all the user data 
    */
-  add(username: string, password: string, email: string): Promise<any> {
-    const text = `
+  add(): Promise<any> {
+    // const query:{text: string, } = {}
+    const query: Query = {
+      text: `
       INSERT INTO
-        users(username, password, email)
-        VALUES($1, $2, $3)
-        RETURNING *
+        users
+        VALUES(DEFAULT)
+        RETURNING id
       `
-    const values = [
-      'DEFAULT',
-      username,
-      password,
-      email
-    ]
-    return this.query(text, values)
+    }
+    // const values = [
+    //   'DEFAULT',
+    //   username,
+    //   password,
+    //   email
+    // ]
+    console.log('db query ran', { time: Date.now(), ...query })
+    return this.query(query)
   }
 
   /**
@@ -59,7 +60,7 @@ export class UsersModel {
    * 
    * @returns A promise that resolves to an object of the users updated data
    */
-  update(id: number,username: string, password: string, email: string):Promise<any> {
+  update(id: number, username: string, password: string, email: string): Promise<any> {
     const text = `
       UPDATE users
         users(username, password, email, created_date, modified_date)
