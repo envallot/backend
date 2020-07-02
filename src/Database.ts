@@ -7,8 +7,8 @@ export class Database {
   config: any
 
   constructor(pg: any) {
-    this.client = new pg.Client(this.config)
-    this.pool = new pg.Pool(this.config)
+    this.client = new pg.Client()
+    this.pool = new pg.Pool()
     this.initDB()
   }
 

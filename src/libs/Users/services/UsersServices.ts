@@ -8,8 +8,8 @@ export class UsersServices {
   async create(){
     try {
       const newUser = await this.model.add()
-      console.log('user created: newUser')
-      return newUser
+      console.log('user created:', newUser.rows[0] )
+      return newUser.rows[0]
 
     } catch(error){
       throw new Error(error)

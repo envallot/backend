@@ -50,7 +50,7 @@ export class UsersModel {
     //   email
     // ]
     console.log('db query ran', { time: Date.now(), ...query })
-    return this.query(query)
+    return this.db.poolQuery(query)
   }
 
   /**

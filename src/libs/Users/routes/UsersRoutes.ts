@@ -19,6 +19,7 @@ export class UsersRoutes {
     this.router.post('/', async (req: Request, res: Response, next: NextFunction) => {
       try {
         const newUser = await this.usersServices.create()
+        console.log('new user in routes:', newUser)
         res.json({
           success: true,
           id: newUser.id
