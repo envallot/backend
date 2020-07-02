@@ -30,7 +30,7 @@ export class Database {
           email VARCHAR(128),
           password VARCHAR(128)
         )
-        `
+      `
     }
 
     return this.poolQuery(query)

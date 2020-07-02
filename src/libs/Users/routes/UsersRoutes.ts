@@ -12,6 +12,7 @@ export class UsersRoutes {
     this.initLogger()
     this.path = "/users"
     this.usersServices = usersServices
+    this.initRoutes()
   }
 
   initRoutes() {
@@ -32,7 +33,7 @@ export class UsersRoutes {
     this.router.use((req: Request, res: Response, next: NextFunction) => {
       console.log('request received', {
         time: Date.now(),
-        path: req.path,
+        path: this.path,
         method: req.method,
         body: req.body,
         params: req.params,

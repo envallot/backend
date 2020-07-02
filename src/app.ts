@@ -8,7 +8,7 @@ export const app = express()
 
 applyMiddleware(app)
 
-const routes = Router()
+// const routes = Router()
 
-routes.use('/users', usersRoutes.router)
+app.use('/users', usersRoutes.router)
 
