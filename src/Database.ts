@@ -1,6 +1,7 @@
 import { config } from 'dotenv'
 config()
 import * as pg from 'pg'
+console.log('cnfg', config)
 
 interface Query {
   text: string;
@@ -8,11 +9,16 @@ interface Query {
 }
 
 export class Database {
-  client: any
-  pool: any
+  client: pg.Client
+  pool: pg.Pool
   constructor(pg: any) {
+    
     this.client = new pg.Client()
     this.pool = new pg.Pool()
+  }
+
+  async initDB() {
+
   }
 
   // clientQuery(text: string, params: [], callback: (err: any, res: any) => void): any {

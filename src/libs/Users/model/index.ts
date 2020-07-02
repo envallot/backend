@@ -1,4 +1,4 @@
-import { Database } from '../../Database'
+import { Database } from '../../../Database'
 import * as pg from 'pg'
 import { UsersModel } from './UsersModel'
 
