@@ -2,6 +2,7 @@ import express, { Request, Response, NextFunction, Application } from 'express'
 import { ErrorWithStatus } from './types'
 import cors from 'cors'
 import helmet from 'helmet'
+import cookieParser from 'cookie-parser'
 
 
 const handleErrors = (err: ErrorWithStatus,
@@ -17,6 +18,7 @@ const handleErrors = (err: ErrorWithStatus,
 }
 
 export const applyMiddleware = (server: Application) => {
+  server.use(cookieParser())
   server.use(cors())
   server.use(helmet())
   server.use(express.json())

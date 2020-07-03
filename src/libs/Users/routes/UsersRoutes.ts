@@ -1,6 +1,12 @@
 import { UsersServices } from '../services/UsersServices'
 import { Router, Request, Response, NextFunction } from 'express'
 
+interface RequestWithID extends Request {
+  userID?: string
+}
+
+
+
 export class UsersRoutes {
   router: Router
   path: string
@@ -16,13 +22,12 @@ export class UsersRoutes {
   }
 
   initRoutes() {
-    this.router.post('/', async (req: Request, res: Response, next: NextFunction) => {
+    this.router.get('/', this.checkCookieAndCreateUser, async (req: RequestWithID, res: Response, next: NextFunction) => {
       try {
-        const newUser = await this.usersServices.create()
-        console.log('new user in routes:', newUser)
+        res.cookie('id', req.userID, { maxAge: 10 * 365 * 24 * 60 * 60 * 1000, httpOnly: true});
         res.json({
           success: true,
-          id: newUser.id
+          id: req.userID
         })
       } catch (e) {
         next(e)
@@ -41,5 +46,30 @@ export class UsersRoutes {
       })
       next()
     })
+  }
+
+  /** checkCookieAndCreateUser checks if a request has a cookie, if so it takes the id from it and places
+   * on the request object as userID to be used by future mw. If no id is undefined, so no cookie or no id
+   * it creates a new user, and sends a cookie with that new user's id as id. This is our automatic registration
+   * 
+   * @param req 
+   * @param res 
+   * @param next 
+   */
+  checkCookieAndCreateUser = async (req: RequestWithID, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.cookies
+      console.log('req.cookies', req.cookies)
+      if (id) {
+        req.userID = id
+        next()
+      } else {
+        const { id } = await this.usersServices.create()
+        req.userID = id
+        next()
+      }
+    } catch (error) {
+      next(error)
+    }
   }
 }
