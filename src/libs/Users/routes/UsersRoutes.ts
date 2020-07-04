@@ -5,8 +5,6 @@ interface RequestWithID extends Request {
   userID?: string
 }
 
-
-
 export class UsersRoutes {
   router: Router
   path: string
@@ -22,9 +20,9 @@ export class UsersRoutes {
   }
 
   initRoutes() {
-    this.router.get('/', this.checkCookieAndCreateUser, async (req: RequestWithID, res: Response, next: NextFunction) => {
+    this.router.post('/', this.checkCookieAndCreateUser, async (req: RequestWithID, res: Response, next: NextFunction) => {
       try {
-        res.cookie('id', req.userID, { maxAge: 10 * 365 * 24 * 60 * 60 * 1000, httpOnly: true});
+        res.cookie('id', req.userID, { maxAge: 10 * 365 * 24 * 60 * 60 * 1000, httpOnly: true });
         res.json({
           success: true,
           id: req.userID
