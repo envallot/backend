@@ -23,10 +23,12 @@ export class UsersRoutes {
     this.router.post('/', this.checkCookieAndCreateUser, async (req: RequestWithID, res: Response, next: NextFunction) => {
       try {
         res.cookie('id', req.userID, { maxAge: 10 * 365 * 24 * 60 * 60 * 1000, httpOnly: true });
+        console.log('cookie should have id ', req.userID)
         res.json({
           success: true,
           id: req.userID
         })
+        res.end()
       } catch (e) {
         next(e)
       }
