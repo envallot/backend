@@ -15,9 +15,42 @@ export class Database {
   async initDB(): Promise<any> {
     try {
       await this.createUsersTable()
+      await this.createItemsTable()
+      await this.createEnvelopesTable()
     } catch (error) {
       throw new Error(error)
     }
+  }
+
+  createItemsTable(): Promise<any> {
+    const query: Query = {
+      text: `
+      CREATE TABLE IF NOT EXISTS
+        items(
+          id SERIAL PRIMARY KEY,
+          user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+          name VARCHAR(128),
+          amount BIGINT,
+          block_id INTEGER 
+        )
+      `
+    }
+    return this.poolQuery(query)
+  }
+
+  createEnvelopesTable(): Promise<any> {
+    const query: Query = {
+      text: `
+      CREATE TABLE IF NOT EXISTS
+        envelopes(
+          id SERIAL PRIMARY KEY,
+          user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+          name VARCHAR(128),
+          limit_amount BIGINT
+        )
+      `
+    }
+    return this.poolQuery(query)
   }
 
   createUsersTable(): Promise<any> {
@@ -32,7 +65,6 @@ export class Database {
         )
       `
     }
-
     return this.poolQuery(query)
   }
 
