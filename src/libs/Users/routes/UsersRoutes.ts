@@ -24,6 +24,8 @@ export class UsersRoutes {
       try {
         res.cookie('id', req.userID, { maxAge: 10 * 365 * 24 * 60 * 60 * 1000, httpOnly: true });
         console.log('cookie should have id ', req.userID)
+        const err = new Error('we threw an error')
+        throw err
         res.json({
           success: true,
           id: req.userID
