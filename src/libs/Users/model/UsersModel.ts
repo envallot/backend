@@ -52,7 +52,7 @@ export class UsersModel extends Model {
       password,
       email
     ]
-    const user = await this.db.pooluery(text, values)
+    const user = await this.db.poolQuery(text, values)
     return user.rows[0]
   }
 
