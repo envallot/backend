@@ -7,25 +7,7 @@ export class UsersModel {
     this.db = database
     this.query = this.db.client.query
   }
-
-  /**
-   * Creates a Users table
-   * 
-   * @returns A promise resolves to a primary key id
-   */
-  // create(): Promise<any> {
-  //   const query: Query = `
-  //     CREATE TABLE IF NOT EXISTS
-  //       users(
-  //         id SERIAL PRIMARY KEY,
-  //         username VARCHAR(128),
-  //         email VARCHAR(128),
-  //         password VARCHAR(128),
-  //       )
-  //     `;
-  //   return this.query(query)
-  // }
-
+  
   /**
    * Adds a new user row. Specifically, all we do is return a unique id.
    * This is for 'registering' users without askign for any info. Later on,
@@ -43,12 +25,6 @@ export class UsersModel {
         RETURNING id
       `
     }
-    // const values = [
-    //   'DEFAULT',
-    //   username,
-    //   password,
-    //   email
-    // ]
     console.log('db query ran', { time: Date.now(), ...query })
     return this.db.poolQuery(query)
   }

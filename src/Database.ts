@@ -1,6 +1,10 @@
 import * as pg from 'pg'
 import { Query } from './types'
 
+interface Data {
+  [key: string]: any
+}
+
 export class Database {
   client: pg.Client
   pool: pg.Pool
@@ -31,7 +35,7 @@ export class Database {
           user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
           name VARCHAR(128),
           amount BIGINT,
-          block_id INTEGER 
+          envelope_id INTEGER 
         )
       `
     }
@@ -112,6 +116,30 @@ export class Database {
       console.log('rejected query', { ...query, ...error })
       throw new Error(error)
     }
+  }
+
+  /**
+   * createUpdate returns a template literal that where undefined data is omitted such that we don't 
+   * update values with 'null' value unexpectadly
+   * @param table the name of the table we want to update
+   * @param data the object contains properties where key maps to name of column and values to row data
+   */
+  createUpdate(table: string, data: Data) {
+    var keys = Object.keys(data)
+      .filter(function (k) {
+        return data[k] !== undefined;
+      });
+    var names = keys.map(function (k, index) {
+      return k + ' = $' + (index + 1);
+    })
+      .join(', ');
+    var values = keys.map(function (k) {
+      return data[k];
+    });
+    return {
+      query: `UPDATE ${table} SET ${names}`, 
+      values: values
+    };
   }
 
 }
