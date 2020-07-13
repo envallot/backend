@@ -2,7 +2,7 @@ import { UsersServices } from '../services/UsersServices'
 import { Router, Request, Response, NextFunction } from 'express'
 
 interface RequestWithID extends Request {
-  userID?: string
+  userID?:string
 }
 
 export class UsersRoutes {
@@ -11,7 +11,6 @@ export class UsersRoutes {
   usersServices: UsersServices
 
   constructor(usersServices: UsersServices) {
-    console.log('usersRoutes invoked')
     this.router = Router()
     this.initLogger()
     this.path = "/users"
@@ -23,7 +22,6 @@ export class UsersRoutes {
     this.router.post('/', this.checkCookieAndCreateUser, async (req: RequestWithID, res: Response, next: NextFunction) => {
       try {
         res.cookie('id', req.userID, { maxAge: 10 * 365 * 24 * 60 * 60 * 1000, httpOnly: true });
-        console.log('cookie should have id ', req.userID)
         res.json({
           success: true,
           id: req.userID
@@ -59,15 +57,15 @@ export class UsersRoutes {
   checkCookieAndCreateUser = async (req: RequestWithID, res: Response, next: NextFunction) => {
     try {
       const { id } = req.cookies
-      console.log('req.cookies', req.cookies)
       if (id) {
         req.userID = id
-        next()
+
       } else {
-        const { id } = await this.usersServices.create()
-        req.userID = id
-        next()
+        const id = await this.usersServices.create()
+
+        req.userID = id.toString()
       }
+      next()
     } catch (error) {
       next(error)
     }

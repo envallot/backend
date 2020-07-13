@@ -1,13 +1,11 @@
 import { Query } from '../../../types'
+import { HTTPError, Model } from '../../utils'
 
-export class UsersModel {
-  db: any
-  query: any
+export class UsersModel extends Model {
   constructor(database: any) {
-    this.db = database
-    this.query = this.db.client.query
+    super(database)
   }
-  
+
   /**
    * Adds a new user row. Specifically, all we do is return a unique id.
    * This is for 'registering' users without askign for any info. Later on,
@@ -15,18 +13,22 @@ export class UsersModel {
    * 
    * @returns A promise that resolves to an object of all the user data 
    */
-  add(): Promise<any> {
-    // const query:{text: string, } = {}
-    const query: Query = {
-      text: `
-      INSERT INTO
+  async add(): Promise<number> {
+    try {
+      const query: Query = {
+        text: `
+        INSERT INTO
         users
         VALUES(DEFAULT)
         RETURNING id
-      `
+        `
+      }
+      const res = await this.db.poolQuery(query)
+      return res.rows[0].id
+
+    } catch(error) {
+      throw new HTTPError(this._internalErrorMsg, 500, error)
     }
-    console.log('db query ran', { time: Date.now(), ...query })
-    return this.db.poolQuery(query)
   }
 
   /**
@@ -36,19 +38,22 @@ export class UsersModel {
    * 
    * @returns A promise that resolves to an object of the users updated data
    */
-  update(id: number, username: string, password: string, email: string): Promise<any> {
+  async update(id: number, username: string, password: string, email: string): Promise<any> {
     const text = `
       UPDATE users
         users(username, password, email, created_date, modified_date)
-        VALUES($1, $2, $3, $4, $5)
+        WHERE id = $1
+        VALUES($2, $3, $4, $5)
         RETURNING *
       `
     const values = [
+      id,
       username,
       password,
       email
     ]
-    return this.query(text, values)
+    const user = await this.db.pooluery(text, values)
+    return user.rows[0]
   }
 
   /**
