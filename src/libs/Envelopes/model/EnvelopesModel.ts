@@ -21,7 +21,6 @@ export class EnvelopesModel extends Model {
           WHERE items.user_id = $1;
           `,
         values: [userID]
-
       }
 
       const items = await this.db.poolQuery(query)

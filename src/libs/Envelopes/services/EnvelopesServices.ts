@@ -7,12 +7,28 @@ export class EnvelopesServices {
     this.model = envelopesModel
   }
 
-  async create(userID: string, name:string, limitAmount:number):Promise<any> {
+  async create(userID: string, name: string, limitAmount: number): Promise<any> {
     return await this.model.add(userID, name, limitAmount)
   }
 
   async get(userID: string) {
-    return await this.model.get(parseInt(userID))
+    const itemsWithEnvID = await this.model.get(parseInt(userID))
+    const unassignedItems: any = {}
+    const envsWithItems: any = {}
+    itemsWithEnvID.forEach((item: any) => {
+
+      if (item.env_id === null) {
+        unassignedItems[item.item_id] = item
+      } else {
+        if(!envsWithItems[item.env_id]) {
+          envsWithItems[item.env_id] = {}
+        }
+        envsWithItems[item.env_id][item.item_id] = item
+        envsWithItems[item.env_id][item.item_id].amount = envsWithItems[item.env_id][item.item_id].amount / 100
+      }
+    })
+    return {unassignedItems, envsWithItems}
+    // return itemsWithEnvID
   }
 
   // async getByUserID(userID: string) {
