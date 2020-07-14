@@ -4,6 +4,8 @@ import cors from 'cors'
 import helmet from 'helmet'
 import cookieParser from 'cookie-parser'
 import { usersRoutes } from './libs/Users/routes'
+import { itemsRoutes } from './libs/Items/routes'
+import { HTTPError } from './libs/utils'
 
 const corsOptions = {
   origin: ['http://localhost:3000', 'https://master.d3jy9j46ta2dag.amplifyapp.com'],
@@ -12,15 +14,14 @@ const corsOptions = {
 }
 
 const handleErrors = (
-  err: ErrorWithStatus,
+  err: HTTPError,
   req: Request,
   res: Response,
   next: NextFunction
 ): void => {
   console.error('express error: ', err)
   res.status(err.httpStatusCode || 500).json({
-    message: err.message,
-    name: err.name,
+    message: err.errorMessage,
   });
 }
 
@@ -39,6 +40,7 @@ export const applyMiddleware = (server: Application) => {
   server.use(helmet())
   server.use(express.json())
   server.use('/users', usersRoutes.router)
+  server.use('/items', itemsRoutes.router)
   server.use(handle404)
   server.use(handleErrors)
 }

@@ -1,10 +1,7 @@
 import { UsersServices } from '../services/UsersServices'
 import { Request, Response, NextFunction } from 'express'
-import { Routes } from '../../utils'
+import { Routes, RequestWithID } from '../../utils'
 
-interface RequestWithID extends Request {
-  userID?: string
-}
 
 export class UsersRoutes extends Routes {
   usersServices: UsersServices

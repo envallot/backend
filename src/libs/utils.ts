@@ -57,3 +57,7 @@ export class Routes {
     })
   }
 }
+
+export interface RequestWithID extends Request {
+  userID?: string
+}

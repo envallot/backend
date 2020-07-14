@@ -8,6 +8,7 @@ export class ItemsServices {
   }
 
   async create(userID: string, name:string, amount:number):Promise<any> {
-    return await this.model.add(userID, name, amount)
+    const amountInCents = amount * 100
+    return await this.model.add(userID, name, amountInCents)
   }
 }
