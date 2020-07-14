@@ -18,7 +18,7 @@ export class EnvelopesRoutes extends Routes {
       this.handlePostEnvelope
     )
     this.router.get(
-      "/:envelopeID",
+      "/",
       this.authRequired,
       this.handleGetEnvelopesAndItems
     )
