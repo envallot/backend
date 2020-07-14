@@ -22,6 +22,12 @@ export class EnvelopesRoutes extends Routes {
       this.authRequired,
       this.handleGetEnvelopesAndItems
     )
+    this.router.put (
+      "/",
+      this.authRequired,
+      this.validateBody,
+      this.handlePutEnvelope
+    )
     // this.router.get(
     //   "/",
     //   this.authRequired,
@@ -62,18 +68,18 @@ export class EnvelopesRoutes extends Routes {
   //   }
   // }
 
-  // handlePutItem = async (req: RequestWithID, res: Response, next: NextFunction) => {
-  //   try {
-  //     const { id, name, amount, envelope_id } = req.body
-  //     const item = await this.service.change(id, name, amount, envelope_id)
+  handlePutEnvelope = async (req: RequestWithID, res: Response, next: NextFunction) => {
+    try {
+      const { id, name, limit_amount} = req.body
+      const item = await this.service.change(id, name, limit_amount)
       
-  //     res.json(item)
+      res.json(item)
 
-  //   } catch (error) {
-  //     console.log(error)
-  //     next(error)
-  //   }
-  // }
+    } catch (error) {
+      console.log(error)
+      next(error)
+    }
+  }
 
   handleGetEnvelopesAndItems = async (req: RequestWithID, res: Response, next: NextFunction) => {
     try {

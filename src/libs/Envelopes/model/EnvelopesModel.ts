@@ -168,20 +168,22 @@ export class EnvelopesModel extends Model {
    * @param id id of item to update
    * @param param1 object containing new name and amount
    */
-  // async update(id: number, name: string, amount: number, envelopeID: number, ): Promise<any> {
-  //   try {
-  //     const query: Query = {
-  //       text: `
-  //       UPDATE items SET envelope_id = $2, name = $3, amount = $4 WHERE id = $1 RETURNING *
-  //       `,
-  //       values: [id, envelopeID, name, amount]
-  //     }
-  //     const item = await this.db.poolQuery(query)
-  //     return item.rows[0]
+  async update(id: number, name: string, limitAmount: number): Promise<any> {
+    try {
+      const query: Query = {
+        text: `
+        UPDATE envelopes SET name = $2, limit_amount = $3 
+        WHERE id = $1 
+        RETURNING *
+        `,
+        values: [id, name, limitAmount]
+      }
+      const item = await this.db.poolQuery(query)
+      return item.rows[0]
 
-  //   } catch (error) {
-  //     throw new HTTPError("No such item", 422, error)
-  //   }
-  // }
+    } catch (error) {
+      throw new HTTPError("No such item", 422, error)
+    }
+  }
 }
 

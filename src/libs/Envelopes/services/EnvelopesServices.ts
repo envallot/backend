@@ -22,13 +22,18 @@ export class EnvelopesServices {
       } else {
         if(!envsWithItems[item.env_id]) {
           envsWithItems[item.env_id] = {}
+          envsWithItems[item.env_id]["items"] = {}
         }
-        envsWithItems[item.env_id][item.item_id] = item
-        envsWithItems[item.env_id][item.item_id].amount = envsWithItems[item.env_id][item.item_id].amount / 100
+        envsWithItems[item.env_id]["name"] = item.env_name
+        envsWithItems[item.env_id]["limit"] = item.limit_amount
+        envsWithItems[item.env_id]["id"] = item.env_id
+
+
+        envsWithItems[item.env_id].items[item.item_id] = item
+        envsWithItems[item.env_id].items[item.item_id].amount = envsWithItems[item.env_id].items[item.item_id] / 100
       }
     })
     return {unassignedItems, envsWithItems}
-    // return itemsWithEnvID
   }
 
   // async getByUserID(userID: string) {
@@ -39,9 +44,9 @@ export class EnvelopesServices {
   //   return await this.model.getUnassigned(parseInt(userID))
   // }
 
-  // async change(id: number, name: string, amount: number, envelope_id: number) {
-  //   return await this.model.update(id, name, amount, envelope_id )
-  // }
+  async change(id: number, name: string, limitAmount: number) {
+    return await this.model.update(id, name, limitAmount)
+  }
 
   // async getByEnvelope(userID: string, id: string) {
   //   return await this.model.getByEnvelope(userID, id)
