@@ -5,6 +5,8 @@ import helmet from 'helmet'
 import cookieParser from 'cookie-parser'
 import { usersRoutes } from './libs/Users/routes'
 import { itemsRoutes } from './libs/Items/routes'
+import { envelopesRoutes } from './libs/Envelopes/routes'
+
 import { HTTPError } from './libs/utils'
 
 const corsOptions = {
@@ -42,6 +44,8 @@ export const applyMiddleware = (server: Application) => {
   server.use(express.json())
   server.use('/users', usersRoutes.router)
   server.use('/items', itemsRoutes.router)
+  server.use('/envelopes', envelopesRoutes.router)
+
   server.use(handle404)
   server.use(handleErrors)
 }
