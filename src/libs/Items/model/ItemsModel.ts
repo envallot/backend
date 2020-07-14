@@ -73,17 +73,19 @@ export class ItemsModel extends Model {
   }
 
   /**
-   * add adds an item with user_id uf user who added it
+   * add adds an item with user_id of user who added it
    * @param userID ID of owner of item
    */
-  async add(userID: number): Promise<any> {
+  async add(userID: string, name:string, amount:number): Promise<any> {
     try {
 
       const query: Query = {
         text: `
-        INSERT INTO items WHERE user_id = $1 RETURNING *
+        INSERT INTO items (user_id, name, amount)
+          VALUES($1, $2, $3)
+        RETURNING *
         `,
-        values: [userID]
+        values: [userID, name, amount]
       }
       const item = await this.db.poolQuery(query)
       return item.rows[0]

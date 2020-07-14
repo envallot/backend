@@ -4,4 +4,4 @@ import { ItemsModel } from './ItemsModel'
 
 const db = new Database(pg)
 
-export const usersModel = new ItemsModel(db)
+export const itemsModel = new ItemsModel(db)

@@ -1,19 +1,17 @@
 import { UsersServices } from '../services/UsersServices'
-import { Router, Request, Response, NextFunction } from 'express'
+import { Request, Response, NextFunction } from 'express'
+import { Routes } from '../../utils'
 
 interface RequestWithID extends Request {
-  userID?:string
+  userID?: string
 }
 
-export class UsersRoutes {
-  router: Router
-  path: string
+export class UsersRoutes extends Routes {
   usersServices: UsersServices
 
   constructor(usersServices: UsersServices) {
-    this.router = Router()
-    this.initLogger()
-    this.path = "/users"
+    super("/users")
+    // this.initLogger()
     this.usersServices = usersServices
     this.initRoutes()
   }
@@ -30,19 +28,6 @@ export class UsersRoutes {
       } catch (e) {
         next(e)
       }
-    })
-  }
-
-  initLogger() {
-    this.router.use((req: Request, res: Response, next: NextFunction) => {
-      console.log('request received', {
-        time: Date.now(),
-        path: this.path,
-        method: req.method,
-        body: req.body,
-        params: req.params,
-      })
-      next()
     })
   }
 
