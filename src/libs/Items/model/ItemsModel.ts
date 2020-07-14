@@ -37,7 +37,7 @@ export class ItemsModel extends Model {
 
       const query: Query = {
         text: `
-        SELECT * from items WHERE user_id = $1 AND envelope_id = null
+        SELECT * FROM items WHERE user_id = $1 AND envelope_id IS NULL
         `,
         values: [userID]
       }
@@ -55,7 +55,7 @@ export class ItemsModel extends Model {
    * @param userID ID of user item belongs to
    * @param envelopeID ID of envlope item belongs to
    */
-  async getByEnvelope(userID: number, envelopeID: number): Promise<any> {
+  async getByEnvelope(userID: string, envelopeID: string): Promise<any> {
     try {
 
       const query: Query = {
@@ -76,7 +76,7 @@ export class ItemsModel extends Model {
    * add adds an item with user_id of user who added it
    * @param userID ID of owner of item
    */
-  async add(userID: string, name:string, amount:number): Promise<any> {
+  async add(userID: string, name: string, amount: number): Promise<any> {
     try {
 
       const query: Query = {
@@ -100,12 +100,12 @@ export class ItemsModel extends Model {
    * 
    * @param id id of item to delete
    */
-  async delete(id: number): Promise<number> {
+  async delete(id: string): Promise<number> {
     try {
 
       const query: Query = {
         text: `
-        DELETE FROM WHERE id = $1 RETURNING id
+        DELETE FROM items WHERE id = $1 RETURNING id
         `,
         values: [id]
       }
@@ -165,14 +165,13 @@ export class ItemsModel extends Model {
    * @param id id of item to update
    * @param param1 object containing new name and amount
    */
-  async update(id: number, { name, amount }: any): Promise<any> {
+  async update(id: number, name: string, amount: number, envelopeID: number, ): Promise<any> {
     try {
-
       const query: Query = {
         text: `
-        UPDATE items SET name = $2 amount = $3 WHERE id = $1 RETURNING *
+        UPDATE items SET envelope_id = $2, name = $3, amount = $4 WHERE id = $1 RETURNING *
         `,
-        values: [id, name, amount]
+        values: [id, envelopeID, name, amount]
       }
       const item = await this.db.poolQuery(query)
       return item.rows[0]

@@ -8,11 +8,26 @@ export class ItemsServices {
   }
 
   async create(userID: string, name:string, amount:number):Promise<any> {
-    const amountInCents = amount * 100
-    return await this.model.add(userID, name, amountInCents)
+    return await this.model.add(userID, name, amount)
   }
 
   async getByUserID(userID: string) {
     return await this.model.get(parseInt(userID))
+  }
+
+  async getUnassigned(userID: string) {
+    return await this.model.getUnassigned(parseInt(userID))
+  }
+
+  async change(id: number, name: string, amount: number, envelope_id: number) {
+    return await this.model.update(id, name, amount, envelope_id )
+  }
+
+  async getByEnvelope(userID: string, id: string) {
+    return await this.model.getByEnvelope(userID, id)
+  }
+
+  async remove(itemID: string) {
+    return await this.model.delete(itemID)
   }
 }
