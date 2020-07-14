@@ -14,12 +14,22 @@ export class EnvelopesModel extends Model {
   async get(userID: number) {
     try {
 
-      const query: Query = {
+      const query = {
         text: `
-        SELECT * FROM items WHERE user_id = $1
-        `,
+        SELECT *
+          FROM items INNER JOIN envelopes ON (items.envelope_id = envelopes.id)
+          WHERE items.user_id = $1;
+          `,
         values: [userID]
+
       }
+
+      // const query: Query = {
+      //   text: `
+      //   SELECT * FROM items WHERE user_id = $1
+      //   `,
+      //   values: [userID]
+      // }
       const items = await this.db.poolQuery(query)
       return items.rows
 

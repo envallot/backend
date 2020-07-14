@@ -17,11 +17,11 @@ export class EnvelopesRoutes extends Routes {
       this.validateBody,
       this.handlePostEnvelope
     )
-    // this.router.get(
-    //   "/:envelopeID",
-    //   this.authRequired,
-    //   this.handleGetItemsByEnvelope
-    // )
+    this.router.get(
+      "/:envelopeID",
+      this.authRequired,
+      this.handleGetEnvelopesAndItems
+    )
     // this.router.get(
     //   "/",
     //   this.authRequired,
@@ -75,21 +75,23 @@ export class EnvelopesRoutes extends Routes {
   //   }
   // }
 
-  // handleGetItems = async (req: RequestWithID, res: Response, next: NextFunction) => {
-  //   try {
-  //     const items = req.query.unassigned ?
-  //       await this.service.getUnassigned(req.userID!) :
-  //       await this.service.getByUserID(req.userID!)
+  handleGetEnvelopesAndItems = async (req: RequestWithID, res: Response, next: NextFunction) => {
+    try {
+      // const items = req.query.join ?
+      //   await this.service.getUnassigned(req.userID!) :
+      //   await this.service.getByUserID(req.userID!)
 
-  //     console.log('gotten items', items)
-  //     res.json(items)
+      const data = await this.service.get(req.userID!)
 
-  //   }
-  //   catch (error) {
-  //     console.log('gotten items error', error)
-  //     next(error)
-  //   }
-  // }
+      console.log('gotten items', data)
+      res.json(data)
+
+    }
+    catch (error) {
+      console.log('gotten items error', error)
+      next(error)
+    }
+  }
 
   handlePostEnvelope = async (req: RequestWithID, res: Response, next: NextFunction) => {
     try {

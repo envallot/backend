@@ -11,6 +11,10 @@ export class EnvelopesServices {
     return await this.model.add(userID, name, limitAmount)
   }
 
+  async get(userID: string) {
+    return await this.model.get(parseInt(userID))
+  }
+
   // async getByUserID(userID: string) {
   //   return await this.model.get(parseInt(userID))
   // }
