@@ -11,4 +11,8 @@ export class ItemsServices {
     const amountInCents = amount * 100
     return await this.model.add(userID, name, amountInCents)
   }
+
+  async getByUserID(userID: string) {
+    return await this.model.get(parseInt(userID))
+  }
 }
