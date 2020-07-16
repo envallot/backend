@@ -6,18 +6,43 @@ export class EnvelopesModel extends Model {
     super(database)
   }
 
+  async getAll(userID: number) {
+    try {
+      const query:Query = {
+        text:`
+        SELECT * FROM envelopes WHERE user_id = $1;
+        `,
+        values: [userID]
+      }
+
+      const envs = await this.db.poolQuery(query)
+      return envs.rows
+    } catch (error) {
+      throw new HTTPError(this._internalErrorMsg, 500, error)
+    }
+  }
+
   /**
-   * get retrieves all of the items user by a specified user
+   * get retrieves all the items joined with their corresponding envelopes that belong to a user
    * 
    * @param userID ID of user that owns items
    */
   async get(userID: number) {
     try {
 
+      // const query = {
+      //   text: `
+      //   SELECT items.id as item_id, envelopes.id as env_id, items.name as item_name, envelopes.name as env_name, items.amount, envelopes.limit_amount
+      //     FROM items FULL JOIN envelopes ON (items.envelope_id = envelopes.id)
+      //     WHERE items.user_id = $1;
+      //     `,
+      //   values: [userID]
+      // }
+
       const query = {
         text: `
         SELECT items.id as item_id, envelopes.id as env_id, items.name as item_name, envelopes.name as env_name, items.amount, envelopes.limit_amount
-          FROM items FULL JOIN envelopes ON (items.envelope_id = envelopes.id)
+          FROM envelopes FULL JOIN items ON (envelopes.id = items.envelope_id)
           WHERE items.user_id = $1;
           `,
         values: [userID]
@@ -32,51 +57,7 @@ export class EnvelopesModel extends Model {
   }
 
   /**
-   * getUnassigned gets the items that belong to a user that are not yet assigned to envelopes
-   * @param userID ID of user item belongs to
-   */
-  // async getUnassigned(userID: number): Promise<any> {
-  //   try {
-
-  //     const query: Query = {
-  //       text: `
-  //       SELECT * FROM items WHERE user_id = $1 AND envelope_id IS NULL
-  //       `,
-  //       values: [userID]
-  //     }
-  //     const items = await this.db.poolQuery(query)
-  //     return items.rows
-
-  //   } catch (error) {
-  //     throw new HTTPError(this._internalErrorMsg, 500, error)
-  //   }
-  // }
-
-  // /**
-  //  * getEnvlope retrieves items that belong to specific envelope
-  //  * 
-  //  * @param userID ID of user item belongs to
-  //  * @param envelopeID ID of envlope item belongs to
-  //  */
-  // async getByEnvelope(userID: string, envelopeID: string): Promise<any> {
-  //   try {
-
-  //     const query: Query = {
-  //       text: `
-  //       SELECT * FROM items WHERE user_id = $1 AND envelope_id = $2
-  //       `,
-  //       values: [userID, envelopeID]
-  //     }
-  //     const items = await this.db.poolQuery(query)
-  //     return items.rows
-
-  //   } catch (error) {
-  //     throw new HTTPError("No such envelope", 404, error)
-  //   }
-  // }
-
-  /**
-   * add adds an item with user_id of user who added it
+   * add adds an envelope with user_id of user who added it
    * @param userID ID of owner of item
    */
   async add(userID: string, name: string, limitAmount: number): Promise<any> {
@@ -99,69 +80,47 @@ export class EnvelopesModel extends Model {
   }
 
   /**
-   * delete removes item from db by id
+   * delete removes envelope and unassigns its items 
    * 
    * @param id id of item to delete
    */
-  // async delete(id: string): Promise<number> {
-  //   try {
+  async delete(id: string): Promise<number> {
+    const client = await this.db.pool.connect()
+    console.log('delete env invoked', client)
 
-  //     const query: Query = {
-  //       text: `
-  //       DELETE FROM items WHERE id = $1 RETURNING id
-  //       `,
-  //       values: [id]
-  //     }
-  //     const item = await this.db.poolQuery(query)
-  //     return item.rows[0].id
+    try {
+      client.query('BEGIN')
 
-  //   } catch (error) {
-  //     throw new HTTPError("No such item", 422, error)
-  //   }
-  // }
+      const updateItemsQuery: Query = {
+        text: `
+        UPDATE items SET envelope_id = NULL
+          WHERE envelope_id = $1;
+        `,
+        values: [id]
+      }
+      await client.query(updateItemsQuery)
 
-  /**
-   * 
-   * @param id id of item to update
-   * @param envelopeID id of envelope we are assigning it to
-   */
-  // async assign(id: number, envelopeID: number): Promise<any> {
-  //   try {
+      const deleteEvenlopeQuery: Query = {
+        text: `
+        DELETE FROM envelopes WHERE id = $1 RETURNING id
+        `,
+        values: [id]
+      }
+      const itemID = await client.query(deleteEvenlopeQuery)
 
-  //     const query: Query = {
-  //       text: `
-  //       UPDATE items SET envelope_id = $2 WHERE id = $1 RETURNING *
-  //       `,
-  //       values: [id, envelopeID]
-  //     }
-  //     const item = await this.db.poolQuery(query)
-  //     return item.rows[0]
+      await client.query('COMMIT')
 
-  //   } catch (error) {
-  //     throw new HTTPError("No such item", 422, error)
-  //   }
-  // }
+      return itemID.rows[0].id
 
-  /**
-   * unassign changes envelope_id to null of specified item
-   * @param id id of item to unassign
-   */
-  // async unassign(id: number): Promise<any> {
-  //   try {
+    } catch (error) {
+      await client.query('ROLLBACK')
+      throw new HTTPError("No such envelope", 422, error)
 
-  //     const query: Query = {
-  //       text: `
-  //       UPDATE items SET envelope_id = null WHERE id = $1 RETURNING *
-  //       `,
-  //       values: [id]
-  //     }
-  //     const item = this.db.poolQuery(query)
-  //     return item.rows[0]
+    } finally {
+      client.release()
+    }
+  }
 
-  //   } catch (error) {
-  //     throw new HTTPError("No such item", 422, error)
-  //   }
-  // }
 
   /**
    * update changes name and amount of specified item

@@ -20,81 +20,59 @@ export class EnvelopesRoutes extends Routes {
     this.router.get(
       "/",
       this.authRequired,
-      this.handleGetEnvelopesAndItems
+      this.handleGetEnvelopes
     )
-    this.router.put (
+    this.router.put(
       "/",
       this.authRequired,
       this.validateBody,
       this.handlePutEnvelope
     )
-    // this.router.get(
-    //   "/",
-    //   this.authRequired,
-    //   this.handleGetItems
-    // )
-    // this.router.put(
-    //   "/",
-    //   this.authRequired,
-    //   this.validateItemBody,
-    //   this.handlePutItem
-    // )
-    // this.router.delete(
-    //   "/:itemID",
-    //   this.authRequired,
-    //   this.validateItemBody,
-    //   this.handleRemoveItem
-    // )
+    this.router.delete(
+      "/:envelopeID",
+      this.authRequired,
+      this.validateBody,
+      this.handleRemoveEnvelope
+    )
   }
 
-  // handleRemoveItem = async (req: RequestWithID, res: Response, next: NextFunction) => {
-  //   try {
-  //     const itemID = await this.service.remove(req.params.itemID)
-  //     res.json(itemID)
-  //   } catch (error) {
-  //     console.log(error)
-  //     next(error)
-  //   }
-  // }
+  handleGetEnvelopes = async (req: RequestWithID, res: Response, next: NextFunction) => {
+    try {
+      const envs = await this.service.getAll(req.userID!)
+      console.log('envs')
+      res.json(envs)
+    } catch(error) {
+      next(error)
+    }
+  }
 
-  // handleGetItemsByEnvelope = async (req: RequestWithID, res: Response, next: NextFunction) => {
-  //   try {
-  //     const { envelopeID } = req.params
-  //     const items = await this.service.getByEnvelope(req.userID!, envelopeID)
-  //     res.json(items)
-  //   } catch(error) {
-  //     console.log(error)
-  //     next(error)
-  //   }
-  // }
+  handleRemoveEnvelope = async (req: RequestWithID, res: Response, next: NextFunction) => {
+    try {
+      const itemID = await this.service.remove(req.params.envelopeID)
+      res.json(itemID)
+    } catch (error) {
+      next(error)
+    }
+  }
 
   handlePutEnvelope = async (req: RequestWithID, res: Response, next: NextFunction) => {
     try {
-      const { id, name, limit_amount} = req.body
+      const { id, name, limit_amount } = req.body
       const item = await this.service.change(id, name, limit_amount)
-      
+
       res.json(item)
 
     } catch (error) {
-      console.log(error)
       next(error)
     }
   }
 
   handleGetEnvelopesAndItems = async (req: RequestWithID, res: Response, next: NextFunction) => {
     try {
-      // const items = req.query.join ?
-      //   await this.service.getUnassigned(req.userID!) :
-      //   await this.service.getByUserID(req.userID!)
-
       const data = await this.service.get(req.userID!)
-
-      console.log('gotten items', data)
       res.json(data)
-
     }
     catch (error) {
-      console.log('gotten items error', error)
       next(error)
     }
   }
@@ -104,7 +82,6 @@ export class EnvelopesRoutes extends Routes {
       const item = await this.service.create(req.userID!, req.body.name, req.body.limit_amount)
       res.json(item)
     } catch (error) {
-      console.log('create item error', error)
       next(error)
     }
   }

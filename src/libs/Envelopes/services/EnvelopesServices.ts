@@ -1,5 +1,11 @@
 import { EnvelopesModel } from "../model/EnvelopesModel";
 
+interface Envelope {
+  id: number;
+  limit_amount: number;
+  name: string
+}
+
 export class EnvelopesServices {
   model: EnvelopesModel
 
@@ -11,6 +17,25 @@ export class EnvelopesServices {
     return await this.model.add(userID, name, limitAmount)
   }
 
+
+
+  async getAll(userID:string) {
+    const envelopes = await this.model.getAll(parseInt(userID))
+    console.log('env service', envelopes)
+    const envsObj:any = {}
+    envelopes.forEach((env:Envelope) => {
+      console.log('forEach', env)
+      envsObj[env.id] = env
+      console.log('envsObj', envsObj)
+    })
+    console.log('envsObj2', envsObj)
+
+    return envsObj
+  }
+  /**
+   * get normalizes a users items into an object of unassigned items, and envelops and the items that belong in them
+   * @param userID user id of owner
+   */
   async get(userID: string) {
     const itemsWithEnvID = await this.model.get(parseInt(userID))
     const unassignedItems: any = {}
@@ -33,26 +58,14 @@ export class EnvelopesServices {
         envsWithItems[item.env_id].items[item.item_id].amount = envsWithItems[item.env_id].items[item.item_id] / 100
       }
     })
-    return {unassignedItems, envsWithItems}
+    return itemsWithEnvID
   }
-
-  // async getByUserID(userID: string) {
-  //   return await this.model.get(parseInt(userID))
-  // }
-
-  // async getUnassigned(userID: string) {
-  //   return await this.model.getUnassigned(parseInt(userID))
-  // }
 
   async change(id: number, name: string, limitAmount: number) {
     return await this.model.update(id, name, limitAmount)
   }
 
-  // async getByEnvelope(userID: string, id: string) {
-  //   return await this.model.getByEnvelope(userID, id)
-  // }
-
-  // async remove(itemID: string) {
-  //   return await this.model.delete(itemID)
-  // }
+  async remove(itemID: string) {
+    return await this.model.delete(itemID)
+  }
 }
