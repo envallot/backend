@@ -13,11 +13,11 @@ export class ItemsServices {
 
   async getByUserID(userID: string) {
     const items = await this.model.get(parseInt(userID))
-    const itemsObj:any = {}
-    items.forEach((item:any) => {
-      itemsObj[item.id] = item
-    })
-    return itemsObj
+    // const itemsObj:any = {}
+    // items.forEach((item:any) => {
+    //   itemsObj[item.id] = item
+    // })
+    return items
   }
 
   async getUnassigned(userID: string) {

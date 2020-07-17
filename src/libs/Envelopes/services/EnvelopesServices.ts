@@ -21,16 +21,7 @@ export class EnvelopesServices {
 
   async getAll(userID:string) {
     const envelopes = await this.model.getAll(parseInt(userID))
-    console.log('env service', envelopes)
-    const envsObj:any = {}
-    envelopes.forEach((env:Envelope) => {
-      console.log('forEach', env)
-      envsObj[env.id] = env
-      console.log('envsObj', envsObj)
-    })
-    console.log('envsObj2', envsObj)
-
-    return envsObj
+    return envelopes
   }
   /**
    * get normalizes a users items into an object of unassigned items, and envelops and the items that belong in them
