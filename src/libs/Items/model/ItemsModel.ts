@@ -152,7 +152,7 @@ export class ItemsModel extends Model {
         `,
         values: [id]
       }
-      const item = this.db.poolQuery(query)
+      const item = await this.db.poolQuery(query)
       return item.rows[0]
 
     } catch (error) {

@@ -8,11 +8,10 @@ interface Data {
 export class Database {
   client: pg.Client
   pool: pg.Pool
-  config: any
 
   constructor(pg: any) {
     this.client = new pg.Client()
-    this.pool = new pg.Pool()
+    this.pool = new pg.Pool({max:2})
     this.initDB()
   }
 
