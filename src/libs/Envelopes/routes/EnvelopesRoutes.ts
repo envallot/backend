@@ -31,7 +31,6 @@ export class EnvelopesRoutes extends Routes {
     this.router.delete(
       "/:envelopeID",
       this.authRequired,
-      this.validateBody,
       this.handleRemoveEnvelope
     )
   }
@@ -41,14 +40,15 @@ export class EnvelopesRoutes extends Routes {
       const envs = await this.service.getAll(req.userID!)
       console.log('envs')
       res.json(envs)
-    } catch(error) {
+    } catch (error) {
       next(error)
     }
   }
 
   handleRemoveEnvelope = async (req: RequestWithID, res: Response, next: NextFunction) => {
     try {
-      const itemID = await this.service.remove(req.params.envelopeID)
+      const itemID = req.query.items ? await this.service.removeEnvAndItems(req.userID!, req.params.envelopeID) :
+        await this.service.removeEnvUnassignItems(req.userID!, req.params.envelopeID)
       res.json(itemID)
     } catch (error) {
       next(error)

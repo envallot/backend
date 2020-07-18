@@ -36,7 +36,6 @@ export class ItemsRoutes extends Routes {
     this.router.delete(
       "/:itemID",
       this.authRequired,
-      this.validateItemBody,
       this.handleRemoveItem
     )
   }
