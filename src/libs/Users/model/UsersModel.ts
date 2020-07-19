@@ -26,7 +26,7 @@ export class UsersModel extends Model {
       const res = await this.db.poolQuery(query)
       return res.rows[0].id
 
-    } catch(error) {
+    } catch (error) {
       throw new HTTPError(this._internalErrorMsg, 500, error)
     }
   }
@@ -34,25 +34,26 @@ export class UsersModel extends Model {
   /**
    * Updates a user by his id
    * 
-   * @param id - The id primary key used to find user
+   * @param- The id primary key used to find user and data to update
    * 
    * @returns A promise that resolves to an object of the users updated data
    */
-  async update(id: number, username: string, password: string, email: string): Promise<any> {
-    const text = `
+  async update(id: number, username: string, email: string): Promise<any> {
+    console.log('usersModalUpdate recieved', id, username, email)
+    const query: Query = {
+      text: `
       UPDATE users
-        users(username, password, email, created_date, modified_date)
+        SET username = $2, email = $3
         WHERE id = $1
-        VALUES($2, $3, $4, $5)
-        RETURNING *
-      `
-    const values = [
-      id,
-      username,
-      password,
-      email
-    ]
-    const user = await this.db.poolQuery(text, values)
+        RETURNING id, email, username
+      `,
+      values: [
+        id,
+        username,
+        email
+      ]
+    }
+    const user = await this.db.poolQuery(query)
     return user.rows[0]
   }
 
@@ -74,8 +75,22 @@ export class UsersModel extends Model {
    * 
    * @returns A promise that resolves to an object of the users data
    */
-  get() {
+  async get(userID: number) {
+    try {
 
+      const query: Query = {
+        text: `
+        SELECT id, username, email
+        FROM users
+        WHERE id = $1
+        `,
+        values: [userID]
+      }
+      const user = await this.db.poolQuery(query)
+      return user.rows[0]
+    }
+    catch (error) {
+      console.log(error)
+    }
   }
-
 }

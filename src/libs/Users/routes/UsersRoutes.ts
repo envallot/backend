@@ -17,13 +17,24 @@ export class UsersRoutes extends Routes {
     this.router.post('/', this.checkCookieAndCreateUser, async (req: RequestWithID, res: Response, next: NextFunction) => {
       try {
         res.cookie('id', req.userID, { maxAge: 10 * 365 * 24 * 60 * 60 * 1000, httpOnly: true });
+
+        const user = await this.usersServices.get(req.userID!)
         res.json({
           success: true,
-          id: req.userID
+          ...user
         })
         res.end()
       } catch (e) {
         next(e)
+      }
+    })
+
+    this.router.put('/', this.validateUpdateBody, async (req: RequestWithID, res: Response, next: NextFunction) => {
+      try {
+        const user = await this.usersServices.change(req.body)
+        res.status(204).json(user)
+      } catch (error) {
+        next(error)
       }
     })
   }
@@ -50,6 +61,15 @@ export class UsersRoutes extends Routes {
       next()
     } catch (error) {
       next(error)
+    }
+  }
+
+  validateUpdateBody(req: RequestWithID, res: Response, next: NextFunction) {
+    console.log('updateUserBody', req.body)
+    if (!req.body.hasOwnProperty('username') || !req.body.hasOwnProperty('id') || !req.body.hasOwnProperty('email')) {
+      res.status(422).json({ detail: 'Something is missing' })
+    } else {
+      next()
     }
   }
 }
