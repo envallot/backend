@@ -23,8 +23,8 @@ const handleErrors = (
 ): void => {
   console.error('express error: ', err)
   res.status(err.httpStatusCode || 500).json({
+    code: err.httpStatusCode || 500,
     message: err.errorMessage,
-    detail: err.message
   });
 }
 
