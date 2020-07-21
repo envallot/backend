@@ -28,6 +28,11 @@ export class EnvelopesRoutes extends Routes {
       this.validateBody,
       this.handlePutEnvelope
     )
+    this.router.put(
+      "/unassignItem",
+      this.authRequired,
+      this.handleUnassignItem
+    )
     this.router.delete(
       "/:envelopeID",
       this.authRequired,
@@ -61,6 +66,18 @@ export class EnvelopesRoutes extends Routes {
       const item = await this.service.change(id, name, limit_amount)
 
       res.json(item)
+
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  handleUnassignItem =  async (req: RequestWithID, res: Response, next: NextFunction) => {
+    try {
+      const { id, itemID } = req.body
+      const envelope = await this.service.unassignItemFromEnvelope(id, itemID)
+
+      res.json(envelope)
 
     } catch (error) {
       next(error)

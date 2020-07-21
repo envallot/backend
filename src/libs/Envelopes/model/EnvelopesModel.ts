@@ -8,8 +8,8 @@ export class EnvelopesModel extends Model {
 
   async getAll(userID: number) {
     try {
-      const query:Query = {
-        text:`
+      const query: Query = {
+        text: `
         SELECT * FROM envelopes WHERE user_id = $1;
         `,
         values: [userID]
@@ -65,11 +65,11 @@ export class EnvelopesModel extends Model {
 
       const query: Query = {
         text: `
-        INSERT INTO envelopes (user_id, name, limit_amount)
-          VALUES($1, $2, $3)
+        INSERT INTO envelopes (user_id, name, limit_amount, total)
+          VALUES($1, $2, $3, DEFAULT)
         RETURNING *
         `,
-        values: [userID, name, limitAmount]
+        values: [userID, name, limitAmount,]
       }
       const item = await this.db.poolQuery(query)
       return item.rows[0]
@@ -86,7 +86,7 @@ export class EnvelopesModel extends Model {
    */
   async delete(id: string): Promise<number> {
     const client = await this.db.pool.connect()
-    
+
     try {
       await client.query('BEGIN')
 
@@ -141,6 +141,48 @@ export class EnvelopesModel extends Model {
 
     } catch (error) {
       throw new HTTPError("No such item", 422, error)
+    }
+  }
+
+  async unassignItemFromEnvelope(id: number, itemID:number) {
+    const client = await this.db.pool.connect()
+    try {
+      await client.query('BEGIN')
+
+      const updateItemQuery: Query = {
+        text: `
+        UPDATE items SET envelope_id = NULL
+          WHERE id = $1;
+        `,
+        values: [itemID]
+      }
+
+      await client.query(updateItemQuery)
+
+      const updateEnvelopeQuery: Query = {
+        text: `
+        UPDATE envelopes 
+        SET total = total - items.amount
+        FROM items 
+        WHERE envelopes.id = $2
+        AND items.id = $1
+        RETURNING total, envelopes.id AS envelope_id, items.id AS item_id
+        
+        `,
+        values: [itemID, id]
+      }
+
+      const envelope = await client.query(updateEnvelopeQuery)
+
+      await client.query('COMMIT')
+
+      return envelope.rows[0]
+
+    } catch (error) {
+      await client.query('ROLLBACK')
+      throw new HTTPError("Something happend that wasn't your fault", 500, error)
+    } finally {
+      client.release()
     }
   }
 }

@@ -15,11 +15,20 @@ export class EnvelopesServices {
   }
 
   async create(userID: string, name: string, limitAmount: number): Promise<any> {
-    return await this.model.add(userID, name, limitAmount)
+    const limitAmountPennies = limitAmount * 100
+    // const totalPennies = total * 100
+    const newEnvelope = await this.model.add(userID, name, limitAmountPennies)
+    newEnvelope.limit_amount = newEnvelope.limit_amount / 100
+    // newEnvelope.total = newEnvelope.total / 100
   }
 
   async getAll(userID: string) {
     const envelopes = await this.model.getAll(parseInt(userID))
+    for (let i = 0; i < envelopes.length; i++) {
+      envelopes[i].total = envelopes[i].total / 100
+      envelopes[i].limit_amount = envelopes[i].limit_amount / 100
+
+    }
     return envelopes
   }
   /**
@@ -77,7 +86,12 @@ export class EnvelopesServices {
     console.log('resolved ', resolved)
 
     return await this.model.delete(envelopeID)
+  }
 
+  async unassignItemFromEnvelope(id:number, itemID:number) {
+    const envelope = await this.model.unassignItemFromEnvelope(id, itemID)
+    console.log('unassignService', envelope)
+    return envelope
   }
 
   /**
