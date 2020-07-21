@@ -38,7 +38,11 @@ export class ItemsServices {
   }
 
   async assignItemTo(id: number, envelopeID: number) {
-    // const newEnvelope = this.model.assignItem(id, envelopeID)
+    const newEnvelope = await this.model.assignItem(id, envelopeID)
+    console.log('newEnvelope', newEnvelope)
+    newEnvelope.total = newEnvelope.total / 100
+    console.log('newEnvelope after', newEnvelope)
+    return newEnvelope
 
   }
 

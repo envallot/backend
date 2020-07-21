@@ -86,10 +86,9 @@ export class EnvelopesModel extends Model {
    */
   async delete(id: string): Promise<number> {
     const client = await this.db.pool.connect()
-    console.log('delete env invoked', client)
-
+    
     try {
-      client.query('BEGIN')
+      await client.query('BEGIN')
 
       const updateItemsQuery: Query = {
         text: `

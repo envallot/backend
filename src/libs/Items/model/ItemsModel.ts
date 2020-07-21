@@ -180,5 +180,47 @@ export class ItemsModel extends Model {
       throw new HTTPError("No such item", 422, error)
     }
   }
+
+  async assignItem(itemID: number, envelopeID: number): Promise<any> {
+    const client = await this.db.pool.connect()
+    try {
+      await client.query('BEGIN')
+
+      const updateItemQuery: Query = {
+        text: `
+        UPDATE items SET envelope_id = $2
+          WHERE id = $1;
+        `,
+        values: [itemID, envelopeID]
+      }
+
+      await client.query(updateItemQuery)
+
+      const updateEnvelopeQuery: Query = {
+        text: `
+        UPDATE envelopes 
+        SET total = total + items.amount
+        FROM items 
+        WHERE envelopes.id = $2
+        AND items.id = $1
+        RETURNING total, envelopes.id
+        
+        `,
+        values: [itemID, envelopeID]
+      }
+
+      const envelope = await client.query(updateEnvelopeQuery)
+
+      await client.query('COMMIT')
+
+      return envelope.rows[0]
+
+    } catch (error) {
+      await client.query('ROLLBACK')
+      throw new HTTPError("Something happend that wasn't your fault", 500, error)
+    } finally {
+      client.release()
+    }
+  }
 }
 

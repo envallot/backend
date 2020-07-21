@@ -33,7 +33,7 @@ export class Database {
           id SERIAL PRIMARY KEY,
           user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
           name VARCHAR(128),
-          amount BIGINT,
+          amount BIGINT DEFAULT 0,
           envelope_id INTEGER 
         )
       `
@@ -49,7 +49,8 @@ export class Database {
           id SERIAL PRIMARY KEY,
           user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
           name VARCHAR(128),
-          limit_amount BIGINT
+          limit_amount BIGINT DEFAULT 0,
+          total BIGINT DEFAULT 0
         )
       `
     }
