@@ -8,7 +8,10 @@ export class ItemsServices {
   }
 
   async create(userID: string, name:string, amount:number):Promise<any> {
-    return await this.model.add(userID, name, amount)
+    const pennies = amount * 100
+    const newItem =  await this.model.add(userID, name, pennies)
+    newItem.amount = pennies / 100
+    return newItem
   }
 
   async getByUserID(userID: string) {
@@ -17,7 +20,7 @@ export class ItemsServices {
     for (let i = 0; i < items.length; i++) {
       items[i].amount = items[i].amount / 100
     }
-    return items
+    return items.reverse()
   }
 
   async getUnassigned(userID: string) {
@@ -32,6 +35,11 @@ export class ItemsServices {
     console.log('newItem after', newItem)
 
     return newItem
+  }
+
+  async assignItemTo(id: number, envelopeID: number) {
+    // const newEnvelope = this.model.assignItem(id, envelopeID)
+
   }
 
   async getByEnvelope(userID: string, id: string) {

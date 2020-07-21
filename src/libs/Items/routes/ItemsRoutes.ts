@@ -33,6 +33,12 @@ export class ItemsRoutes extends Routes {
       this.validateItemBody,
       this.handlePutItem
     )
+    this.router.put(
+      "/assign",
+      this.authRequired,
+      this.validateItemBody,
+      this.handleAssignItem
+    )
     this.router.delete(
       "/:itemID",
       this.authRequired,
@@ -65,6 +71,19 @@ export class ItemsRoutes extends Routes {
     try {
       const { id, name, amount, envelope_id } = req.body
       const item = await this.service.change(id, name, amount, envelope_id)
+      
+      res.json(item)
+
+    } catch (error) {
+      console.log(error)
+      next(error)
+    }
+  }
+
+  handleAssignItem = async  (req: RequestWithID, res: Response, next: NextFunction) => {
+    try {
+      const { id, envelope_id } = req.body
+      const item = await this.service.assignItemTo(id, envelope_id)
       
       res.json(item)
 
