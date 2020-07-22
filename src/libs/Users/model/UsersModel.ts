@@ -15,6 +15,7 @@ export class UsersModel extends Model {
    */
   async add(): Promise<number> {
     try {
+      
       const query: Query = {
         text: `
         INSERT INTO
@@ -23,6 +24,7 @@ export class UsersModel extends Model {
         RETURNING id
         `
       }
+      
       const res = await this.db.poolQuery(query)
       return res.rows[0].id
 
@@ -39,22 +41,28 @@ export class UsersModel extends Model {
    * @returns A promise that resolves to an object of the users updated data
    */
   async update(id: number, username: string, email: string): Promise<any> {
-    console.log('usersModalUpdate recieved', id, username, email)
-    const query: Query = {
-      text: `
-      UPDATE users
+    try { 
+      
+      const query: Query = {
+        text: `
+        UPDATE users
         SET username = $2, email = $3
         WHERE id = $1
         RETURNING id, email, username
-      `,
-      values: [
-        id,
-        username,
-        email
-      ]
+        `,
+        values: [
+          id,
+          username,
+          email
+        ]
+      }
+      
+      const user = await this.db.poolQuery(query)
+     
+      return user.rows[0]
+    } catch (error) {
+      throw new HTTPError("No such user", 422, error)
     }
-    const user = await this.db.poolQuery(query)
-    return user.rows[0]
   }
 
   /**
@@ -75,9 +83,9 @@ export class UsersModel extends Model {
    * 
    * @returns A promise that resolves to an object of the users data
    */
-  async get(userID: number) {
+  async get(userID: number) { 
     try {
-
+      
       const query: Query = {
         text: `
         SELECT id, username, email
@@ -86,11 +94,13 @@ export class UsersModel extends Model {
         `,
         values: [userID]
       }
+      
       const user = await this.db.poolQuery(query)
+      
       return user.rows[0]
     }
     catch (error) {
-      console.log(error)
+      throw new HTTPError("No such user", 422, error)
     }
   }
 }

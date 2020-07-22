@@ -167,6 +167,7 @@ export class ItemsModel extends Model {
    */
   async update(id: number, name: string, amount: number, envelopeID: number, ): Promise<any> {
     try {
+     
       const query: Query = {
         text: `
         UPDATE items SET envelope_id = $2, name = $3, amount = $4 WHERE id = $1 RETURNING *
@@ -184,6 +185,7 @@ export class ItemsModel extends Model {
   async assignItem(itemID: number, envelopeID: number): Promise<any> {
     const client = await this.db.pool.connect()
     try {
+      
       await client.query('BEGIN')
 
       const updateItemQuery: Query = {
@@ -204,7 +206,6 @@ export class ItemsModel extends Model {
         WHERE envelopes.id = $2
         AND items.id = $1
         RETURNING total, envelopes.id
-        
         `,
         values: [itemID, envelopeID]
       }

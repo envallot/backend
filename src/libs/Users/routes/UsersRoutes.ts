@@ -1,5 +1,5 @@
 import { UsersServices } from '../services/UsersServices'
-import { Request, Response, NextFunction } from 'express'
+import { Response, NextFunction } from 'express'
 import { Routes, RequestWithID } from '../../utils'
 
 
@@ -8,7 +8,6 @@ export class UsersRoutes extends Routes {
 
   constructor(usersServices: UsersServices) {
     super("/users")
-    // this.initLogger()
     this.usersServices = usersServices
     this.initRoutes()
   }
@@ -65,7 +64,6 @@ export class UsersRoutes extends Routes {
   }
 
   validateUpdateBody(req: RequestWithID, res: Response, next: NextFunction) {
-    console.log('updateUserBody', req.body)
     if (!req.body.hasOwnProperty('username') || !req.body.hasOwnProperty('id') || !req.body.hasOwnProperty('email')) {
       res.status(422).json({ detail: 'Something is missing' })
     } else {
