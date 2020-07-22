@@ -62,7 +62,10 @@ export class EnvelopesServices {
   }
 
   async change(id: number, name: string, limitAmount: number) {
-    return await this.model.update(id, name, limitAmount)
+    const pennies = limitAmount * 100
+    const envelope = await this.model.update(id, name, pennies)
+    envelope.limit_amount = envelope.limit_amount / 100
+    return envelope
   }
 
   async remove(envelopeID: string) {
