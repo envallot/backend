@@ -20,6 +20,7 @@ export class EnvelopesServices {
     const newEnvelope = await this.model.add(userID, name, limitAmountPennies)
     newEnvelope.limit_amount = newEnvelope.limit_amount / 100
     // newEnvelope.total = newEnvelope.total / 100
+    return newEnvelope
   }
 
   async getAll(userID: string) {
