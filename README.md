@@ -11,9 +11,16 @@ Open [http://localhost:8000](http://localhost:8000) to view it in the browser, w
 
 This is running nodemon with ts-node.<br />
 
-### `npm start`
+## In Detail
 
-Serves the build in dist folder.<br />
+* Node with express and typescript was used
+* No register or login required
+* Domain driven approach
+* Class oriented separation of concerns 
+* Modular, testable architecture
+* No ORM, raw SQL is used with PostgreSQL
+
+
 
 ## Challenges
 
