@@ -11,7 +11,7 @@ export class Database {
 
   constructor(pg: any) {
     this.client = new pg.Client()
-    this.pool = new pg.Pool({max:2})
+    this.pool = new pg.Pool()
     this.initDB()
   }
 
