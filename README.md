@@ -20,8 +20,6 @@ This is running nodemon with ts-node.<br />
 * Modular, testable architecture
 * No ORM, raw SQL is used with PostgreSQL
 
-
-
 ## Challenges
 
 The backend structure is largely experimental. 

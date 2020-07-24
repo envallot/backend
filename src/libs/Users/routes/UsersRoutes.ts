@@ -64,7 +64,8 @@ export class UsersRoutes extends Routes {
   }
 
   validateUpdateBody(req: RequestWithID, res: Response, next: NextFunction) {
-    if (!req.body.hasOwnProperty('username') || !req.body.hasOwnProperty('id') || !req.body.hasOwnProperty('email')) {
+    console.log('zzz', req.body)
+    if (!req.body.hasOwnProperty('username')) {
       res.status(422).json({ detail: 'Something is missing' })
     } else {
       next()
