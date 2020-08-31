@@ -15,7 +15,7 @@ export class UsersRoutes extends Routes {
   initRoutes() {
     this.router.post('/', this.checkCookieAndCreateUser, async (req: RequestWithID, res: Response, next: NextFunction) => {
       try {
-        res.cookie('id', req.userID, { maxAge: 10 * 365 * 24 * 60 * 60 * 1000, httpOnly: true });
+        res.cookie('id', req.userID, { maxAge: 10 * 365 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite:"none", secure:true });
 
         const user = await this.usersServices.get(req.userID!)
         res.json({
